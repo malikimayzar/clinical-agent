@@ -1,0 +1,9 @@
+{
+  "extraPaths": [
+    "/mnt/d/llm-eval-framework",
+    "/mnt/d/rag-research",
+    "/mnt/d/arxiv-research-assistant"
+  ],
+  "venvPath": ".",
+  "venv": ".venv"
+}

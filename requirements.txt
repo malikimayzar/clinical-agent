@@ -1,0 +1,25 @@
+# clinical-agent
+langgraph
+langchain
+langchain-community
+langchain-ollama
+fastapi
+uvicorn
+httpx
+pydantic
+pydantic-settings
+psycopg2-binary
+sqlalchemy
+faiss-cpu
+ollama
+transformers
+apscheduler
+jinja2
+markdown
+arxiv
+rank-bm25
+prometheus-client
+python-dotenv
+tenacity
+loguru
+rich
