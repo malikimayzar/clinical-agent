@@ -8,7 +8,6 @@ load_dotenv()
 ARXIV_SERVICE_URL = os.getenv("ARXIV_SERVICE_URL", "http://localhost:8000")
 
 def fetch_from_go_service(limit=20, page=1) -> list:
-    """Fetch papers dari arxiv-research-assistant Go service."""
     try:
         response = httpx.get(
             f"{ARXIV_SERVICE_URL}/papers",
@@ -18,11 +17,10 @@ def fetch_from_go_service(limit=20, page=1) -> list:
         if response.status_code == 200:
             return response.json().get("papers", [])
     except Exception as e:
-        print(f"   ⚠️  Go service unavailable: {e}, fallback to direct ArXiv API")
+        print(f"   [WARNING]  Go service unavailable: {e}, fallback to direct ArXiv API")
     return []
 
 def fetch_from_arxiv_direct(query="large language model clinical", max_results=10) -> list:
-    """Fallback: fetch langsung dari ArXiv API."""
     client = arxiv.Client()
     search = arxiv.Search(
         query=query,

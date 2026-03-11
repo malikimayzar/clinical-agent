@@ -34,7 +34,7 @@ def try_extract(paper: dict, model: str) -> list:
         # Fix bug: handle None content
         content = response.message.content
         if not content:
-            print(f"      ⚠️  {model} returned empty response")
+            print(f"      [WARNING]  {model} returned empty response")
             return []
 
         raw     = content.strip()
@@ -52,20 +52,20 @@ def try_extract(paper: dict, model: str) -> list:
         return valid
 
     except Exception as e:
-        print(f"      ⚠️  {model} failed: {e}")
+        print(f"      [WARNING]  {model} failed: {e}")
         return []
 
 def extract_claims_node(state: AgentState) -> AgentState:
-    print("\n🔍 [claim_extractor] Extracting claims...")
+    print("\n[FIND] [claim_extractor] Extracting claims...")
     all_claims  = []
     retry_count = state.get("retry_count", 0)
 
     for paper in state["papers"]:
-        print(f"   📝 {paper['title'][:55]}...")
+        print(f"   [OK] {paper['title'][:55]}...")
         claims = try_extract(paper, model="phi3:mini")
 
         if not claims:
-            print(f"      🔄 Retry with mistral...")
+            print(f"      [REPEAT] Retry with mistral...")
             claims = try_extract(paper, model="mistral")
 
         if claims:
@@ -74,9 +74,9 @@ def extract_claims_node(state: AgentState) -> AgentState:
                 c["paper_title"] = paper["title"]
                 c["abstract"]    = paper["abstract"]
             all_claims.extend(claims)
-            print(f"      ✅ {len(claims)} claims")
+            print(f"      [OK] {len(claims)} claims")
         else:
-            print(f"      ⚠️  Failed after retry, skip")
+            print(f"      [WARNING]  Failed after retry, skip")
             retry_count += 1
 
     valid = [c for c in all_claims if c.get("confidence", 0) >= 0.6]

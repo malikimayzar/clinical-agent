@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -11,6 +9,14 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  rag-research:
+    build: /mnt/d/rag-research
+    ports:
+      - '8001:8003'
+    volumes:
+      - /mnt/d/rag-research/data:/app/data
     restart: unless-stopped
 
   prometheus:

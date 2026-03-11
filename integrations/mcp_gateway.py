@@ -7,7 +7,6 @@ load_dotenv()
 MCP_GATEWAY_URL = os.getenv("MCP_GATEWAY_URL", "http://localhost:8003")
 
 def orchestrate(tool: str, payload: dict) -> dict:
-    """Call mcp-gateway untuk orchestration."""
     try:
         response = httpx.post(
             f"{MCP_GATEWAY_URL}/tools/{tool}",
@@ -17,7 +16,7 @@ def orchestrate(tool: str, payload: dict) -> dict:
         if response.status_code == 200:
             return response.json()
     except Exception as e:
-        print(f"   ⚠️  mcp-gateway unavailable: {e}")
+        print(f"   [WARNING]  mcp-gateway unavailable: {e}")
     return {}
 
 def health_check() -> bool:

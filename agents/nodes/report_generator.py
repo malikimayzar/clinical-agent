@@ -3,7 +3,7 @@ from datetime import datetime
 from agents.state import AgentState
 
 def generate_report_node(state: AgentState) -> AgentState:
-    print("\n📊 [report_generator] Generating report...")
+    print("\n[OK] [report_generator] Generating report...")
     now      = datetime.now().strftime("%Y-%m-%d %H:%M")
     conflicts = state.get("conflicts", [])
     claims    = state.get("valid_claims", [])
@@ -34,5 +34,5 @@ def generate_report_node(state: AgentState) -> AgentState:
     with open(path, "w") as f:
         f.write(report)
 
-    print(f"   ✅ Report saved: {path}")
+    print(f"   [OK] Report saved: {path}")
     return {**state, "status": "done", "report_path": path}

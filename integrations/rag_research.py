@@ -7,7 +7,6 @@ load_dotenv()
 RAG_RESEARCH_URL = os.getenv("RAG_RESEARCH_URL", "http://localhost:8001")
 
 def retrieve_similar(query: str, top_k=5, method="hybrid") -> list:
-    """Query rag-research service untuk find similar claims."""
     try:
         response = httpx.post(
             f"{RAG_RESEARCH_URL}/retrieve",
@@ -17,7 +16,7 @@ def retrieve_similar(query: str, top_k=5, method="hybrid") -> list:
         if response.status_code == 200:
             return response.json().get("results", [])
     except Exception as e:
-        print(f"   ⚠️  rag-research unavailable: {e}")
+        print(f"   [WARNING]  rag-research unavailable: {e}")
     return []
 
 def health_check() -> bool:

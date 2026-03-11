@@ -17,7 +17,6 @@ def get_evaluator():
     return _evaluator
 
 def evaluate_claim(claim: dict) -> dict:
-    """Evaluate faithfulness satu klaim."""
     try:
         evaluator = get_evaluator()
         case = {
@@ -34,7 +33,7 @@ def evaluate_claim(claim: dict) -> dict:
         claim["faithfulness_score"] = result.faithfulness_score
         claim["has_failure"]        = result.has_failure
     except Exception as e:
-        print(f"   ⚠️  Eval failed: {e}")
+        print(f"   [WARNING]  Eval failed: {e}")
         claim["faithfulness_score"] = 0.5
         claim["has_failure"]        = False
     return claim

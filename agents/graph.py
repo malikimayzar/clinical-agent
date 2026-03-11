@@ -44,5 +44,5 @@ def build_graph():
 
 if __name__ == "__main__":
     agent = build_graph()
-    print("✅ Graph compiled!")
+    print("[OK] Graph compiled!")
     print(f"   Nodes: {list(agent.get_graph().nodes.keys())}")

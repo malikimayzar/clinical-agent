@@ -19,7 +19,9 @@ def get_db():
 def test_connection():
     with engine.connect() as conn:
         result = conn.execute(text("SELECT version()"))
-        print(f"✅ PostgreSQL: {result.fetchone()[0][:50]}")
+        row = result.fetchone()
+        version = row[0][:50] if row else "unknown"
+        print(f"[OK] PostgreSQL: {version}")
 
 if __name__ == "__main__":
     test_connection()

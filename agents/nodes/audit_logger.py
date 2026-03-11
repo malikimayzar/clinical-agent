@@ -3,7 +3,7 @@ from db.connection import SessionLocal
 from sqlalchemy import text
 
 def audit_log_node(state: AgentState) -> AgentState:
-    print("\n📝 [audit_logger] Saving to database...")
+    print("\n[OK] [audit_logger] Saving to database...")
     db = SessionLocal()
     try:
         for claim in state.get("valid_claims", []):
@@ -18,9 +18,9 @@ def audit_log_node(state: AgentState) -> AgentState:
                 "label":  claim.get("status", "UNCERTAIN"),
             })
         db.commit()
-        print(f"   ✅ {len(state.get('valid_claims', []))} claims logged")
+        print(f"   [OK] {len(state.get('valid_claims', []))} claims logged")
     except Exception as e:
-        print(f"   ⚠️  DB error: {e}")
+        print(f"   [WARNING]  DB error: {e}")
         db.rollback()
     finally:
         db.close()

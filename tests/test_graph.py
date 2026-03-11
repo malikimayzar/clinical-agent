@@ -22,8 +22,8 @@ result = agent.invoke({
 })
 
 print("\n" + "="*50)
-print(f"✅ Status   : {result['status']}")
-print(f"📄 Papers   : {result['papers_processed']}")
-print(f"🔍 Claims   : {result['claims_extracted']}")
-print(f"⚠️  Conflicts: {result['conflicts_found']}")
-print(f"📊 Report   : {result['report_path']}")
+print(f"[OK] Status   : {result['status']}")
+print(f"[OK] Papers   : {result['papers_processed']}")
+print(f"[OK] Claims   : {result['claims_extracted']}")
+print(f"[WARNING] Conflicts: {result['conflicts_found']}")
+print(f"[OK] Report   : {result['report_path']}")
