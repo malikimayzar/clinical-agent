@@ -1,26 +1,22 @@
+# 1. Gunakan image yang lebih ringan jika memungkinkan
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# System deps
-RUN apt-get update && apt-get install -y \
+# 2. System dependencies minimal
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Python deps
+# 3. Copy requirements dan install
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir uvicorn[standard] gunicorn
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir uvicorn[standard] gunicorn
 
-# Copy source
+# 4. Copy source code
 COPY . .
 
-# Pre-download sentence-transformers model
-RUN python3 -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
-
-ENV TRANSFORMERS_OFFLINE=1
-ENV HF_DATASETS_OFFLINE=1
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8080

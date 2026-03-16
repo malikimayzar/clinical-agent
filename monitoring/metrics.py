@@ -1,5 +1,6 @@
 import time
 import os
+from typing import Optional
 from contextlib import contextmanager
 from prometheus_client import (
     CollectorRegistry,
@@ -89,7 +90,7 @@ def time_node(node_name: str):
         elapsed = time.perf_counter() - start
         NODE_LATENCY.labels(node_name=node_name).observe(elapsed)
 
-def push_metrics(run_id: str = None):
+def push_metrics(run_id: Optional[str] = None):
     grouping_key = {"run_id": run_id} if run_id else {}
     try:
         push_to_gateway(

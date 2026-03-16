@@ -20,9 +20,7 @@ RULE_CONFLICT_THRESHOLD  = 0.40
 _nli_model     = None
 _nli_tokenizer = None
 
-
-# ── Prompt ────────────────────────────────────────────────────────────────────
-
+# Prompt 
 def _build_nli_prompt(claim: str, kb_texts: list[str]) -> str:
     kb_str = "\n".join(f"- {t[:300]}" for t in kb_texts[:3])
     return f"""You are a medical claim conflict detector.
@@ -46,9 +44,7 @@ Classify as exactly one of:
 Reply with ONLY this JSON (no markdown, no explanation):
 {{"label": "CONFLICT_CRITICAL", "score": 0.95, "reason": "one sentence"}}"""
 
-
-# ── Groq NLI (async, primary) ─────────────────────────────────────────────────
-
+#  Groq NLI 
 async def _groq_nli_one(
     session: aiohttp.ClientSession,
     claim_text: str,
@@ -106,7 +102,6 @@ async def _groq_nli_one(
         logger.warning("[NLI-Groq] error: %s", e)
         return None
 
-
 async def _groq_nli_all(claims_with_kb: list[tuple[str, list[str]]]) -> list[dict | None]:
     """Parallel Groq NLI untuk semua claims sekaligus."""
     async with aiohttp.ClientSession() as session:
@@ -115,7 +110,6 @@ async def _groq_nli_all(claims_with_kb: list[tuple[str, list[str]]]) -> list[dic
 
 
 # ── DeBERTa fallback (per-claim) ──────────────────────────────────────────────
-
 def _load_nli_model():
     global _nli_model, _nli_tokenizer
     if _nli_model is not None:
@@ -132,14 +126,21 @@ def _load_nli_model():
         _nli_model = _nli_tokenizer = None
     return _nli_model, _nli_tokenizer
 
-
 def _deberta_nli_one(claim_text: str, kb_texts: list[str]) -> dict | None:
     import torch
-    model, tokenizer = _load_nli_model()
-    if model is None or not kb_texts:
+
+    res = _load_nli_model()
+    if res is None:
+        logger.error("[NLI] Gagal memuat model/tokenizer")
         return None
+    model, tokenizer = res
+
+    if model is None or tokenizer is None or not kb_texts:
+        logger.warning(f"[NLI] Inisialisasi gagal. Model: {type(model)}, Tokenizer: {type(tokenizer)}")
+        return None
+
     try:
-        premises   = [kb[:512] for kb in kb_texts[:3]]
+        premises = [kb[:512] for kb in kb_texts[:3]]
         hypotheses = [claim_text] * len(premises)
         inputs = tokenizer(premises, hypotheses, return_tensors="pt",
                            truncation=True, max_length=256, padding=True)
@@ -160,8 +161,7 @@ def _deberta_nli_one(claim_text: str, kb_texts: list[str]) -> dict | None:
         return None
 
 
-# ── Rule-based fallback ───────────────────────────────────────────────────────
-
+# ── Rule-based fallback 
 def _rule_based_classify(similarity_score: float) -> dict:
     if similarity_score >= RULE_CONFIRMED_THRESHOLD:
         return {"label": "CONFIRMED", "severity": None,
