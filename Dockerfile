@@ -13,8 +13,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir uvicorn[standard] gunicorn
 
-# Copy sisa kode
-COPY . .
+# --- UBAH BAGIAN INI ---
+# Copy hanya folder yang dibutuhkan saja
+COPY ./api ./api
+COPY ./agents ./agents
+COPY ./integrations ./integrations
+COPY ./scheduler ./scheduler
+# -----------------------
 
 ENV PYTHONUNBUFFERED=1
 
