@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: clinical-agent-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+      - key: POSTGRES_HOST
+        sync: false
+      - key: POSTGRES_PORT
+        value: "6543"
+      - key: POSTGRES_DB
+        value: postgres
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: TRANSFORMERS_OFFLINE
+        value: "1"
+      - key: HF_DATASETS_OFFLINE
+        value: "1"
+      - key: LANGCHAIN_TRACING_V2
+        value: "false"
+    healthCheckPath: /health
