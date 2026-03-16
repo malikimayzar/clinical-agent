@@ -22,4 +22,4 @@ prometheus-client
 python-dotenv
 tenacity
 loguru
-rich
+richsentence-transformers
