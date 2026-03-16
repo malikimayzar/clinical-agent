@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from typing import Optional
 import psycopg2
 import psycopg2.extras
@@ -19,7 +18,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 def get_db():
     return psycopg2.connect(
@@ -61,7 +59,6 @@ def health():
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
 
-
 @app.get("/runs")
 def get_runs(limit: int = 10):
     try:
@@ -80,7 +77,6 @@ def get_runs(limit: int = 10):
         return {"runs": [dict(r) for r in rows], "count": len(rows)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.get("/claims")
 def get_claims(limit: int = 20, status: Optional[str] = None):
@@ -110,7 +106,6 @@ def get_claims(limit: int = 20, status: Optional[str] = None):
         return {"claims": [dict(r) for r in rows], "count": len(rows)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.get("/conflicts")
 def get_conflicts(limit: int = 20, severity: Optional[str] = None):
@@ -142,7 +137,6 @@ def get_conflicts(limit: int = 20, severity: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @app.get("/stats")
 def get_stats():
     try:
@@ -157,9 +151,10 @@ def get_stats():
                 (SELECT AVG(faithfulness_score) FROM claims WHERE faithfulness_score IS NOT NULL) as avg_faithfulness,
                 (SELECT MAX(started_at) FROM runs WHERE status = 'done') as last_run
         """)
-        row = dict(cur.fetchone())
+        result = cur.fetchone()
+        stats = dict(result) if result else {}
         cur.close()
         conn.close()
-        return {"stats": row}
+        return {"stats": stats}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
