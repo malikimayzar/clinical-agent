@@ -1,6 +1,22 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+
+# Environment
 .env
+
+# Generated
 reports/
+logs/
+
+# Rust
+rust/claim-parser/target/
+
+# Docker
 *.log
+
+# IDE
+.vscode/
+pyrightconfig.json

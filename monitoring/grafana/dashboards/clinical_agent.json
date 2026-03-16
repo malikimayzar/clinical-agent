@@ -1,0 +1,103 @@
+{
+  "annotations": { "list": [] },
+  "description": "clinical-agent LangGraph pipeline monitoring",
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "id": 1, "title": "Pipeline Runs — Success vs Failure", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } } },
+      "targets": [
+        { "expr": "clinical_agent_pipeline_runs_total{status='success'}", "legendFormat": "✅ Success", "refId": "A" },
+        { "expr": "clinical_agent_pipeline_runs_total{status='failure'}", "legendFormat": "❌ Failure", "refId": "B" }
+      ]
+    },
+    {
+      "id": 2, "title": "Pipeline Duration (detik)", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 120 }, { "color": "red", "value": 300 }] } } },
+      "targets": [{ "expr": "clinical_agent_pipeline_duration_seconds", "legendFormat": "Duration", "refId": "A" }]
+    },
+    {
+      "id": 3, "title": "Claims Extracted", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 10 }] } } },
+      "targets": [{ "expr": "clinical_agent_claims_extracted", "legendFormat": "Claims", "refId": "A" }]
+    },
+    {
+      "id": 4, "title": "Conflicts by Severity", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } } },
+      "targets": [
+        { "expr": "clinical_agent_conflicts_found{severity='critical'}", "legendFormat": "🔴 Critical", "refId": "A" },
+        { "expr": "clinical_agent_conflicts_found{severity='major'}", "legendFormat": "🟡 Major", "refId": "B" },
+        { "expr": "clinical_agent_conflicts_found{severity='minor'}", "legendFormat": "🟢 Minor", "refId": "C" }
+      ]
+    },
+    {
+      "id": 5, "title": "Node Latency P95 per Node", "type": "bargauge",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "options": { "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] }, "displayMode": "gradient" },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 5 }, { "color": "red", "value": 30 }] } } },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, clinical_agent_node_latency_seconds_bucket)",
+          "legendFormat": "{{node_name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6, "title": "Node Latency — semua node (avg detik)", "type": "bargauge",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "options": { "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] }, "displayMode": "gradient" },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 5 }, { "color": "red", "value": 30 }] } } },
+      "targets": [
+        {
+          "expr": "clinical_agent_node_latency_seconds_sum / clinical_agent_node_latency_seconds_count",
+          "legendFormat": "{{node_name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7, "title": "Faithfulness — Passed vs Failed", "type": "piechart",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+      "options": { "pieType": "donut", "legend": { "displayMode": "list", "placement": "right" } },
+      "targets": [
+        { "expr": "clinical_agent_faithfulness_passed", "legendFormat": "Passed", "refId": "A" },
+        { "expr": "clinical_agent_faithfulness_failed", "legendFormat": "Failed", "refId": "B" }
+      ]
+    },
+    {
+      "id": 8, "title": "Papers & Claims per Run", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 20 } } },
+      "targets": [
+        { "expr": "clinical_agent_papers_processed", "legendFormat": "Papers", "refId": "A" },
+        { "expr": "clinical_agent_claims_extracted", "legendFormat": "Claims", "refId": "B" }
+      ]
+    },
+    {
+      "id": 9, "title": "Critical Conflicts — History", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "fixedColor": "red", "mode": "fixed" }, "custom": { "lineWidth": 2, "fillOpacity": 30 } } },
+      "targets": [{ "expr": "clinical_agent_conflicts_found{severity='critical'}", "legendFormat": "🔴 Critical", "refId": "A" }]
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "tags": ["clinical-agent", "langgraph", "medical-ai"],
+  "time": { "from": "now-7d", "to": "now" },
+  "timezone": "browser",
+  "title": "clinical-agent — Pipeline Monitoring",
+  "uid": "clinical-agent-v1",
+  "version": 1
+}
