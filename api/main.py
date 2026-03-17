@@ -29,7 +29,6 @@ def get_db():
         cursor_factory=psycopg2.extras.RealDictCursor,
     )
 
-
 @app.get("/")
 def root():
     return {
@@ -40,27 +39,33 @@ def root():
         "stack": "Python + Rust + Go + LangGraph",
     }
 
-
 @app.get("/health")
 def health():
+    conn = None
     try:
         conn = get_db()
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) as runs FROM runs WHERE status = 'done'")
+        cur.execute("SELECT COUNT(*) as count FROM runs WHERE status = 'done'")
         row = cur.fetchone()
         cur.close()
-        conn.close()
+
+        row_dict = dict(row) if row else {}
+        count_val = row["count"] if row else 0
+        
         return {
             "status": "ok",
             "service": "clinical-agent",
-            "total_runs": row["count"],
+            "total_runs": count_val,
             "timestamp": datetime.utcnow().isoformat(),
         }
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
+    finally:
+        if conn: conn.close()
 
 @app.get("/runs")
 def get_runs(limit: int = 10):
+    conn = None
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -73,13 +78,16 @@ def get_runs(limit: int = 10):
         """, (limit,))
         rows = cur.fetchall()
         cur.close()
-        conn.close()
         return {"runs": [dict(r) for r in rows], "count": len(rows)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()
 
 @app.get("/claims")
 def get_claims(limit: int = 20, status: Optional[str] = None):
+    conn = None
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -102,13 +110,16 @@ def get_claims(limit: int = 20, status: Optional[str] = None):
             """, (limit,))
         rows = cur.fetchall()
         cur.close()
-        conn.close()
         return {"claims": [dict(r) for r in rows], "count": len(rows)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()
 
 @app.get("/conflicts")
 def get_conflicts(limit: int = 20, severity: Optional[str] = None):
+    conn = None
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -132,13 +143,16 @@ def get_conflicts(limit: int = 20, severity: Optional[str] = None):
             """, (limit,))
         rows = cur.fetchall()
         cur.close()
-        conn.close()
         return {"conflicts": [dict(r) for r in rows], "count": len(rows)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()
 
 @app.get("/stats")
 def get_stats():
+    conn = None
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -152,9 +166,12 @@ def get_stats():
                 (SELECT MAX(started_at) FROM runs WHERE status = 'done') as last_run
         """)
         result = cur.fetchone()
-        stats = dict(result) if result else {}
         cur.close()
-        conn.close()
+        
+        # Cast ke dict secara eksplisit
+        stats = dict(result) if result else {}
         return {"stats": stats}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn: conn.close()

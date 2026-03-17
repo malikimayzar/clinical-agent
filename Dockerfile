@@ -8,18 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install python dependencies
 COPY requirements.txt .
+
+# ----------------------------------
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir uvicorn[standard] gunicorn
+# ----------------------------------
 
-# --- UBAH BAGIAN INI ---
-# Copy hanya folder yang dibutuhkan saja
+# Copy hanya folder yang dibutuhkan
 COPY ./api ./api
 COPY ./agents ./agents
 COPY ./integrations ./integrations
 COPY ./scheduler ./scheduler
-# -----------------------
 
 ENV PYTHONUNBUFFERED=1
 
