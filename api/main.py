@@ -47,7 +47,7 @@ def health():
     try:
         conn = get_db()
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) as count FROM runs WHERE status = 'success'")
+        cur.execute("SELECT COUNT(*) as count FROM runs WHERE status IN ('success', 'done')")
         row = cur.fetchone()
         cur.close()
         total_runs = row["count"] if row else 0
@@ -159,12 +159,12 @@ def get_stats():
         cur = conn.cursor()
         cur.execute("""
             SELECT
-                (SELECT COUNT(*) FROM runs WHERE status = 'success') as total_runs,
+                (SELECT COUNT(*) FROM runs WHERE status IN ('success', 'done')) as total_runs,
                 (SELECT COUNT(*) FROM claims) as total_claims,
                 (SELECT COUNT(*) FROM claims WHERE status = 'CONFLICT') as total_conflicts,
                 (SELECT COUNT(*) FROM claims WHERE severity = 'critical') as critical_conflicts,
                 (SELECT AVG(faithfulness_score) FROM claims WHERE faithfulness_score IS NOT NULL) as avg_faithfulness,
-                (SELECT MAX(started_at) FROM runs WHERE status = 'success') as last_run
+                (SELECT MAX(started_at) FROM runs WHERE status IN ('success', 'done')) as last_run
         """)
         result = cur.fetchone()
         cur.close()
