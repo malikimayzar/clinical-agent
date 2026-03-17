@@ -41,6 +41,8 @@ def root():
 
 @app.get("/health")
 def health():
+    db_status = "connected"
+    total_runs = 0
     conn = None
     try:
         conn = get_db()
@@ -48,20 +50,19 @@ def health():
         cur.execute("SELECT COUNT(*) as count FROM runs WHERE status = 'done'")
         row = cur.fetchone()
         cur.close()
-
-        row_dict = dict(row) if row else {}
-        count_val = row["count"] if row else 0
-        
-        return {
-            "status": "ok",
-            "service": "clinical-agent",
-            "total_runs": count_val,
-            "timestamp": datetime.utcnow().isoformat(),
-        }
+        total_runs = row["count"] if row else 0
     except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
+        db_status = f"db_error: {str(e)}"
     finally:
         if conn: conn.close()
+        
+    return {
+        "status": "ok",
+        "service": "clinical-agent",
+        "database": db_status,
+        "total_runs": total_runs,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
 
 @app.get("/runs")
 def get_runs(limit: int = 10):
