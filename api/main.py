@@ -47,7 +47,7 @@ def health():
     try:
         conn = get_db()
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) as count FROM runs WHERE status = 'done'")
+        cur.execute("SELECT COUNT(*) as count FROM runs WHERE status = 'success'")
         row = cur.fetchone()
         cur.close()
         total_runs = row["count"] if row else 0
@@ -172,6 +172,164 @@ def get_stats():
         # Cast ke dict secara eksplisit
         stats = dict(result) if result else {}
         return {"stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn: conn.close()
+
+# ============================================================
+# TAMBAHKAN KE api/main.py — paste di bawah endpoint /stats
+# ============================================================
+
+@app.get("/papers")
+def get_papers(limit: int = 20, processed: Optional[bool] = None):
+    conn = None
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        if processed is not None:
+            cur.execute("""
+                SELECT paper_id, arxiv_id, title, abstract,
+                       authors, date, source, processed
+                FROM papers
+                WHERE processed = %s
+                ORDER BY date DESC
+                LIMIT %s
+            """, (processed, limit))
+        else:
+            cur.execute("""
+                SELECT paper_id, arxiv_id, title, abstract,
+                       authors, date, source, processed
+                FROM papers
+                ORDER BY date DESC
+                LIMIT %s
+            """, (limit,))
+        rows = cur.fetchall()
+        cur.close()
+        return {"papers": [dict(r) for r in rows], "count": len(rows)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn: conn.close()
+
+
+@app.get("/papers/{paper_id}")
+def get_paper(paper_id: str):
+    conn = None
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT p.paper_id, p.arxiv_id, p.title, p.abstract,
+                   p.authors, p.date, p.source, p.processed,
+                   COUNT(c.claim_id) as total_claims,
+                   COUNT(CASE WHEN c.status = 'CONFLICT' THEN 1 END) as conflict_claims
+            FROM papers p
+            LEFT JOIN claims c ON p.paper_id = c.paper_id
+            WHERE p.paper_id = %s OR p.arxiv_id = %s
+            GROUP BY p.paper_id
+        """, (paper_id, paper_id))
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Paper not found")
+
+        # Fetch claims for this paper
+        cur.execute("""
+            SELECT claim_id, text, confidence, faithfulness_score,
+                   topic_tags, status, severity, created_at
+            FROM claims
+            WHERE paper_id = %s
+            ORDER BY created_at DESC
+        """, (row["paper_id"],))
+        claims = cur.fetchall()
+        cur.close()
+
+        result = dict(row)
+        result["claims"] = [dict(c) for c in claims]
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn: conn.close()
+
+
+@app.get("/runs/{run_id}")
+def get_run(run_id: str):
+    conn = None
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT run_id, started_at, finished_at, status,
+                   papers_processed, claims_extracted, conflicts_found
+            FROM runs
+            WHERE run_id = %s
+        """, (run_id,))
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Run not found")
+
+        # Fetch audit log for this run
+        cur.execute("""
+            SELECT al.log_id, al.node, al.action, al.score,
+                   al.label, al.created_at,
+                   c.text as claim_text, p.title as paper_title
+            FROM audit_log al
+            LEFT JOIN claims c ON al.claim_id = c.claim_id
+            LEFT JOIN papers p ON al.paper_id = p.paper_id
+            WHERE al.run_id = %s
+            ORDER BY al.created_at ASC
+        """, (run_id,))
+        logs = cur.fetchall()
+        cur.close()
+
+        result = dict(row)
+        result["audit_log"] = [dict(l) for l in logs]
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn: conn.close()
+
+
+@app.get("/runs/{run_id}/claims")
+def get_run_claims(run_id: str, status: Optional[str] = None):
+    """Get all claims extracted during a specific run via audit_log"""
+    conn = None
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        if status:
+            cur.execute("""
+                SELECT DISTINCT c.claim_id, c.text, c.confidence,
+                       c.faithfulness_score, c.topic_tags,
+                       c.status, c.severity, c.created_at,
+                       p.title as paper_title, p.arxiv_id
+                FROM audit_log al
+                JOIN claims c ON al.claim_id = c.claim_id
+                LEFT JOIN papers p ON al.paper_id = p.paper_id
+                WHERE al.run_id = %s AND c.status = %s
+                ORDER BY c.created_at DESC
+            """, (run_id, status.upper()))
+        else:
+            cur.execute("""
+                SELECT DISTINCT c.claim_id, c.text, c.confidence,
+                       c.faithfulness_score, c.topic_tags,
+                       c.status, c.severity, c.created_at,
+                       p.title as paper_title, p.arxiv_id
+                FROM audit_log al
+                JOIN claims c ON al.claim_id = c.claim_id
+                LEFT JOIN papers p ON al.paper_id = p.paper_id
+                WHERE al.run_id = %s
+                ORDER BY c.created_at DESC
+            """, (run_id,))
+        rows = cur.fetchall()
+        cur.close()
+        return {"claims": [dict(r) for r in rows], "count": len(rows)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
