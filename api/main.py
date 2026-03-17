@@ -177,10 +177,6 @@ def get_stats():
     finally:
         if conn: conn.close()
 
-# ============================================================
-# TAMBAHKAN KE api/main.py — paste di bawah endpoint /stats
-# ============================================================
-
 @app.get("/papers")
 def get_papers(limit: int = 20, processed: Optional[bool] = None):
     conn = None
@@ -233,7 +229,6 @@ def get_paper(paper_id: str):
         if not row:
             raise HTTPException(status_code=404, detail="Paper not found")
 
-        # Fetch claims for this paper
         cur.execute("""
             SELECT claim_id, text, confidence, faithfulness_score,
                    topic_tags, status, severity, created_at
@@ -253,7 +248,6 @@ def get_paper(paper_id: str):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if conn: conn.close()
-
 
 @app.get("/runs/{run_id}")
 def get_run(run_id: str):
@@ -294,7 +288,6 @@ def get_run(run_id: str):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if conn: conn.close()
-
 
 @app.get("/runs/{run_id}/claims")
 def get_run_claims(run_id: str, status: Optional[str] = None):
