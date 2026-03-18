@@ -20,3 +20,5 @@ rust/claim-parser/target/
 # IDE
 .vscode/
 pyrightconfig.json
+rust/*/target/
+rust/similarity-engine/target/
