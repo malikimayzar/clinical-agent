@@ -194,7 +194,7 @@ def detect_conflict_node(state: AgentState) -> AgentState:
     t0 = time.perf_counter()
     groq_results = asyncio.run(_groq_nli_all(claims_with_kb))
     elapsed_ms   = (time.perf_counter() - t0) * 1000
-    print(f"   [GROQ-NLI] {len(compared)} claims parallel | {elapsed_ms:.0f}ms total | {elapsed_ms/len(compared):.0f}ms/claim")
+    print(f"   [GROQ-NLI] {len(compared)} claims parallel | {elapsed_ms:.0f}ms total | {elapsed_ms/(len(compared) or 1):.0f}ms/claim")
 
     # ── Assemble — fallback per claim kalau Groq gagal ────────────────────────
     for i, claim in enumerate(compared):
