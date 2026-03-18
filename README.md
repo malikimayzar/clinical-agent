@@ -314,7 +314,7 @@ Grafana dashboard at `http://localhost:3000` (admin/clinical2026) after `bash st
 - [x] M10: FastAPI REST API (Railway)
 - [x] M11: React dashboard (Vercel) — 6 pages, mobile PWA
 - [x] M12: Autonomous scheduler deployed (Railway)
-- [ ] M9: Rust PDF report exporter (Typst)
+- [x] M9: Rust PDF report exporter (Typst) :8004
 - [ ] M13: Demo video
 
 ---
