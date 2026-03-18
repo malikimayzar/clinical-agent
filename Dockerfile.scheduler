@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./agents ./agents
+COPY ./scheduler ./scheduler
+COPY ./integrations ./integrations
+COPY ./db ./db
+
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "scheduler/daily_runner.py"]
