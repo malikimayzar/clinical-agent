@@ -1,0 +1,14 @@
+/mnt/d/clinical-agent/rust/similarity-engine/target/release/deps/serde-da627d8c2fd89e09.d: /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /mnt/d/clinical-agent/rust/similarity-engine/target/release/build/serde-079baa7f558859c2/out/private.rs
+
+/mnt/d/clinical-agent/rust/similarity-engine/target/release/deps/libserde-da627d8c2fd89e09.rlib: /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /mnt/d/clinical-agent/rust/similarity-engine/target/release/build/serde-079baa7f558859c2/out/private.rs
+
+/mnt/d/clinical-agent/rust/similarity-engine/target/release/deps/libserde-da627d8c2fd89e09.rmeta: /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /mnt/d/clinical-agent/rust/similarity-engine/target/release/build/serde-079baa7f558859c2/out/private.rs
+
+/home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/malikimayzar/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/mnt/d/clinical-agent/rust/similarity-engine/target/release/build/serde-079baa7f558859c2/out/private.rs:
+
+# env-dep:OUT_DIR=/mnt/d/clinical-agent/rust/similarity-engine/target/release/build/serde-079baa7f558859c2/out

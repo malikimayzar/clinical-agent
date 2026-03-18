@@ -1,0 +1,26 @@
+[package]
+name = "similarity_engine"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "similarity_engine"
+path = "src/main.rs"
+
+[dependencies]
+actix-web = "4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tokio-postgres = { version = "0.7", features = ["with-serde_json-1"] }
+postgres-types = { version = "0.2", features = ["derive"] }
+once_cell = "1"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+regex = "1"
+unicode-segmentation = "1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
