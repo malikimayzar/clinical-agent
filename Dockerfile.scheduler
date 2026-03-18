@@ -15,6 +15,7 @@ COPY ./agents ./agents
 COPY ./scheduler ./scheduler
 COPY ./integrations ./integrations
 COPY ./db ./db
+COPY ./monitoring ./monitoring
 
 ENV PYTHONUNBUFFERED=1
 
